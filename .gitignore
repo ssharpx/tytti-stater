@@ -1,2 +1,10 @@
+**/.vscode
+**/.DS_Store
+__pycache__/
 /.venv
+.idea/
+.ruff_cache/
+
 *.env
+*.log
+*.pyc
