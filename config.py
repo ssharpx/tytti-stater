@@ -57,3 +57,15 @@ class StandartLoader:
             f"@{DB_HOST}:{DB_PORT}"
             f"/{DB_NAME}"
         )
+        
+    @property
+    def get_output(self) -> str:
+        chat = getenv("OUTPUT_CHAT")
+        
+        if not chat:
+            logger.warning(
+                "get_output: telegram chat for withdrawals is not specified"
+            )
+            raise FileNotFoundError
+        
+        return chat
