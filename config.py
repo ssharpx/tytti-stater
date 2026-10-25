@@ -2,6 +2,17 @@ import logging
 from os import getenv
 from dotenv import load_dotenv
 
+'''
+This parameter determines exactly when it calculates the statistics and sends them to you.
+
+Warning! Once this operation is completed, the data for the previous day will be deleted.
+
+Standart: 5:00 AM.
+'''
+UPDATE_TIME: int = 5
+
+
+
 
 logging.basicConfig(
     format="[%(asctime)s]: [%(name)s)]: [%(levelname)s]: %(message)s",

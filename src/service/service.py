@@ -1,7 +1,10 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from aiogram.types import User
 
 from src.repository.repository import Repository
+from config import logging
+
+logger = logging.getLogger(__name__)
 
 repo = Repository()
 
@@ -32,6 +35,8 @@ class Service:
             (f"{u.username}" if u.username else "No username user", u.counter_message)
             for u in top_users_obj or []
         ]
+        
+        await self.clear_table_message()
         
         return self._get_text_for_statistic(
             date=data_from.strftime("%d.%m.%Y"),

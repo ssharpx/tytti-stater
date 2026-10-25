@@ -1,11 +1,26 @@
 import asyncio
+from datetime import timezone
 from aiogram import Bot, Dispatcher
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from config import logging, StandartLoader
+from config import logging, StandartLoader, UPDATE_TIME
+from src.controler.bot import router, sender_message
 from src.core.database import BaseModel, engine as message_table
+
 logger = logging.getLogger()
+scheduler = AsyncIOScheduler(timezone=timezone.utc)
+
 loader_obj = StandartLoader()
 
+bot = Bot(token=loader_obj.get_token_bot)
+
+async def schedule_sender() -> None:
+    
+    logger.info(
+        "schedule_sender: process started..."
+    )
+    
+    await sender_message(bot=bot)
 
 async def main() -> None:
     
@@ -13,17 +28,27 @@ async def main() -> None:
         "program installation process..."
     )
     
-    bot = Bot(token=loader_obj.get_token_bot)
     dp = Dispatcher()
     
     await create_table()
+    
+    scheduler.add_job(
+        schedule_sender,
+        "cron",
+        hour=UPDATE_TIME,
+        minute=0,
+        misfire_grace_time=300,
+        timezone=timezone.utc,
+        max_instances=1,
+        coalesce=True,
+    )
     
     try:
         
         logger.info(
             "the process has been successfully started"
         )
-        
+        await dp.include_router(router)
         await dp.start_polling(bot)
         
     finally:
