@@ -30,7 +30,7 @@ async def get_db():
         "get_db: database session opened"
     )
     
-    async with LocalSession as db:
+    async with LocalSession() as db:
         try:
             yield db
         finally:
