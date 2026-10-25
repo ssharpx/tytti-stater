@@ -1,4 +1,5 @@
-from sqlalchemy import select
+from datetime import datetime
+from sqlalchemy import select, desc, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
@@ -65,5 +66,66 @@ class Repository:
                 e,
             )
             return None
+    
+    
+    async def clear_table_message(self) -> None:
+        
+        async with get_db() as db:
             
+            try:
+                await db.execute(delete(MessageActivity))
+                await db.commit()
+                
+                logger.info(
+                    "clear_table_message: tables successfully cleared"
+                )
+                return None
             
+            except SQLAlchemyError as e:        
+                logger.warning(
+                    "clear_table_message: failed to clear the tables"
+                )
+                return None
+        
+    
+    async def get_all_message_data(self) -> list[MessageActivity] | None:
+        
+        async with get_db() as db:
+            try:
+                result_obj = await db.execute(
+                    select(MessageActivity)
+                )
+                
+                return result_obj.scalars().all()
+
+            except SQLAlchemyError as e:
+                logger.warning(
+                    "get_all_message_data: database error: %s (%s)",
+                    type(e).__name__,
+                    e,
+                )
+                return None
+            
+    async def get_top_users(self) -> list[MessageActivity] | None:
+        
+        async with get_db() as db:
+            
+            try:
+                result_obj = await db.execute(
+                    select(MessageActivity)
+                    .order_by(
+                        desc(MessageActivity.counter_message)
+                    ).limit(10)
+                )
+                
+                return result_obj.scalars().all()
+            
+            except SQLAlchemyError as e:
+                logger.warning(
+                    "get_top_users: database error: %s (%s)",
+                    type(e).__name__,
+                    e,
+                )
+                return None
+                
+                            
