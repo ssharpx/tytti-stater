@@ -2,7 +2,6 @@ from datetime import datetime, timedelta, timezone
 from aiogram.types import User
 
 from src.repository.repository import Repository
-from src.models.models import AllMessages
 
 repo = Repository()
 
