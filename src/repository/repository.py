@@ -83,7 +83,9 @@ class Repository:
             
             except SQLAlchemyError as e:        
                 logger.warning(
-                    "clear_table_message: failed to clear the tables"
+                    "clear_table_message: failed to clear the tables: %s (%s)",
+                    type(e).__name__,
+                    e,
                 )
                 return None
         
