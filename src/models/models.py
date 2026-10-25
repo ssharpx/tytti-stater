@@ -46,7 +46,7 @@ class MessageActivity(BaseModel):
         server_default=func.now()
     )
     
-class LastFollower(BaseModel):
+class Followers(BaseModel):
     
     __tablename__ = "last_followers"
     
@@ -62,6 +62,7 @@ class LastFollower(BaseModel):
     
     user_id: Mapped[int] = mapped_column(
         nullable=False,
+        unique=True,
     )
     
     created_at: Mapped[datetime] = mapped_column(
