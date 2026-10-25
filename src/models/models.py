@@ -4,26 +4,11 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from src.core.database import BaseModel
 
-class MessageDate(BaseModel):
+class AllMessages:
     
-    __tablename__ = "message_data"
-    
-    id: Mapped[int] = mapped_column(
-        primary_key=True,
-        autoincrement=True,
-    )
-    
-    all_messag: Mapped[int] = mapped_column(
-        server_default=0,
-    )
-    
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        index=True,
-    )
-    
-
+    def __init__(self, *, all_message: int, date: datetime):
+        self.all_message = all_message
+        self.date = date,
 
 class MessageActivity(BaseModel):
     
@@ -37,6 +22,7 @@ class MessageActivity(BaseModel):
     user_id: Mapped[int] = mapped_column(
         index=True,
         nullable=False,
+        unique=True,
     )
     
     username: Mapped[str] = mapped_column(
@@ -51,7 +37,7 @@ class MessageActivity(BaseModel):
     last_message: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
-        server_onupdate=func.now(),
+        onupdate=func.now(),
         index=True,
     )
     
