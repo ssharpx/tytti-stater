@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from src.core.database import get_db
-from src.models.models import MessageActivity
+from src.models.models import MessageActivity, Followers
 from config import logging
 
 logger = logging.getLogger(__name__)
@@ -129,5 +129,69 @@ class Repository:
                     e,
                 )
                 return None
+    
+    async def add_new_follower(self, user_id: int, is_premium: bool) -> None:
+        
+        async with get_db() as db:
+            try:
+                is_exsist = await self._check_exsist_follower(db=db, user_id=user_id)
                 
+                if is_exsist is not None:
+                    user = Followers(
+                        is_premium=is_premium,
+                        user_id=user_id,
+                    )
+                    
+                    db.add(user)
+                    return None
+                    
+            except IntegrityError as e:
+                logger.warning(
+                    "add_new_followers: database error %s (%s)",
+                    type(e).__name__,
+                    e,
+                )
+                return None
+    
+    
+    async def _check_exsist_follower(self, *, db: AsyncSession, user_id: int) -> Followers | None:
+        try:
+            result = await db.execute(select(Followers).where(
+                Followers.user_id == user_id,
+            ))
+                
+            is_exsist = result.scalar_one_or_none()
+                
+            return is_exsist
+            
+        except SQLAlchemyError as e:
+            logger.warning(
+                "_chech_exsist_follower: database error %s (%s)",
+                type(e).__name__,
+                e,
+            )
+            return None
+    
+    
+    async def get_followers(self, data_from: datetime, data_to: datetime) -> list[Followers]:
+        
+        async with get_db() as db:
+            try:
+                followers = await db.execute(
+                    select(Followers)
+                    .where(
+                        Followers.created_at >= data_from,
+                        Followers.created_at < data_to,
+                    )
+                )
+                
+                return followers.scalars().all()
+            
+            except SQLAlchemyError as e:
+                logger.warning(
+                    "get_followers: database error %s (%s)",
+                    type(e).__name__,
+                    e,
+                )
+                return []
                             
