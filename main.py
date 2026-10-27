@@ -35,8 +35,8 @@ async def main() -> None:
     scheduler.add_job(
         schedule_sender,
         "cron",
-        hour=19,
-        minute=13,
+        hour=UPDATE_TIME,
+        minute=0,
         misfire_grace_time=300,
         timezone=timezone.utc,
         max_instances=1,
