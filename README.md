@@ -58,7 +58,7 @@ Chat statistics for 27.10.2026:
 
    ```bash
    git clone https://github.com/ssharpx/tytti-stater
-   cd tytti-starter
+   cd tytti-stater
    ```
 
 2. Create the environment file and fill in the values:
@@ -132,7 +132,7 @@ Without `make`, use Docker Compose directly, e.g. `docker compose up -d --build`
 │   ├── models/             # SQLAlchemy models
 │   └── core/               # Database engine and session
 ├── Dockerfile
-├── dockcer-compose.yaml
+├── docker-compose.yaml
 ├── Makefile
 ├── requirements.txt
 └── .env.example

@@ -2,13 +2,9 @@ import logging
 from os import getenv
 from dotenv import load_dotenv
 
-'''
-This parameter determines exactly when it calculates the statistics and sends them to you.
-
-Warning! Once this operation is completed, the data for the previous day will be deleted.
-
-Standart: 0:00 UTC.
-'''
+# Hour (UTC) when statistics are calculated and sent to the chat.
+# Warning: after the report is sent, message counters are reset.
+# Default: 0 (00:00 UTC).
 UPDATE_TIME: int = 0
 
 
@@ -52,7 +48,7 @@ class StandartLoader:
             logger.error(
                 "get_db_config: the program did not identify the data for connecting to the database"
             )
-            raise FileNotFoundError
+            raise RuntimeError
         
         
         return (
@@ -66,9 +62,9 @@ class StandartLoader:
         chat = getenv("OUTPUT_CHAT")
         
         if not chat:
-            logger.warning(
+            logger.error(
                 "get_output: telegram chat for withdrawals is not specified"
             )
-            raise FileNotFoundError
+            raise RuntimeError
         
         return chat
