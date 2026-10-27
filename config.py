@@ -15,8 +15,8 @@ UPDATE_TIME: int = 0
 
 
 logging.basicConfig(
-    level=logging.DEBUG,
-    format="[%(asctime)s]: [%(name)s)]: [%(levelname)s]: %(message)s",
+    level=logging.INFO,
+    format="[%(asctime)s]: [%(name)s]: [%(levelname)s]: %(message)s",
 )
 
 logger = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ class StandartLoader:
             logger.error(
                 "get_token_bot: telegram token is not defined"
             )
-            raise FileNotFoundError
+            raise RuntimeError
         
         return token
 
@@ -48,16 +48,7 @@ class StandartLoader:
         DB_USER = getenv("DB_USER")
         DB_HOST = getenv("DB_HOST")
         
-        if not all(
-            [
-                
-                isinstance(DB_NAME, str),
-                isinstance(DB_PASS, str),   
-                isinstance(DB_PORT, str),   
-                isinstance(DB_USER, str),
-                isinstance(DB_HOST, str),
-            ]
-        ):
+        if not all([DB_NAME, DB_PASS, DB_PORT, DB_USER, DB_HOST]):
             logger.error(
                 "get_db_config: the program did not identify the data for connecting to the database"
             )

@@ -57,7 +57,7 @@ Chat statistics for 27.10.2026:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/ssharpx/tytti-starter.git
+   git clone https://github.com/ssharpx/tytti-stater
    cd tytti-starter
    ```
 
@@ -132,7 +132,7 @@ Without `make`, use Docker Compose directly, e.g. `docker compose up -d --build`
 │   ├── models/             # SQLAlchemy models
 │   └── core/               # Database engine and session
 ├── Dockerfile
-├── compose.yaml
+├── dockcer-compose.yaml
 ├── Makefile
 ├── requirements.txt
 └── .env.example
