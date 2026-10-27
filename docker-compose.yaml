@@ -1,0 +1,44 @@
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+services:
+  bot:
+    build: .
+    container_name: tytti-starter
+    env_file: .env
+    restart: unless-stopped
+    mem_limit: 1.5g
+    stop_grace_period: 30s
+    logging: *logging
+    init: true
+    networks: [interval]
+    depends_on:
+      database: 
+        condition: service_healthy
+  
+  database:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    shm_size: 128mb
+    mem_limit: 384m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    logging: *logging
+    networks: [interval]
+
+networks:
+  interval:
+
+volumes:
+  db_data:
