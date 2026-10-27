@@ -28,8 +28,9 @@ class Repository:
                 
                 else:
                     new_user = MessageActivity(
-                        user_id=user_id,
+                        user_id=str(user_id),
                         username=username,
+                        counter_message=1,
                     )
                     
                     db.add(new_user)
@@ -53,7 +54,7 @@ class Repository:
             
             result = await db.execute(
                 select(MessageActivity).where(
-                    MessageActivity.user_id == user_id,
+                    MessageActivity.user_id == str(user_id),
                 )
             )
             
@@ -136,13 +137,15 @@ class Repository:
             try:
                 is_exsist = await self._check_exsist_follower(db=db, user_id=user_id)
                 
-                if is_exsist is not None:
+                if is_exsist is None:
                     user = Followers(
                         is_premium=is_premium,
-                        user_id=user_id,
+                        user_id=str(user_id),
                     )
                     
                     db.add(user)
+                    await db.commit()
+                    
                     return None
                     
             except IntegrityError as e:
@@ -157,7 +160,7 @@ class Repository:
     async def _check_exsist_follower(self, *, db: AsyncSession, user_id: int) -> Followers | None:
         try:
             result = await db.execute(select(Followers).where(
-                Followers.user_id == user_id,
+                Followers.user_id == str(user_id),
             ))
                 
             is_exsist = result.scalar_one_or_none()
@@ -182,7 +185,7 @@ class Repository:
                     .where(
                         Followers.created_at >= data_from,
                         Followers.created_at < data_to,
-                    )
+                    )   
                 )
                 
                 return followers.scalars().all()

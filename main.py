@@ -35,21 +35,26 @@ async def main() -> None:
     scheduler.add_job(
         schedule_sender,
         "cron",
-        hour=UPDATE_TIME,
-        minute=0,
+        hour=19,
+        minute=13,
         misfire_grace_time=300,
         timezone=timezone.utc,
         max_instances=1,
         coalesce=True,
     )
     
+    scheduler.start()
+    
     try:
         
         logger.info(
             "the process has been successfully started"
         )
-        await dp.include_router(router)
-        await dp.start_polling(bot)
+        dp.include_router(router)
+        await dp.start_polling(
+            bot,
+            allowed_updates=dp.resolve_used_update_types(),
+        )   
         
     finally:
         
@@ -57,6 +62,8 @@ async def main() -> None:
             "the process stopped working"
         )
         
+        scheduler.shutdown(wait=False)
+        await message_table.dispose()
         await bot.session.close()
 
 

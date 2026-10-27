@@ -1,14 +1,8 @@
 from datetime import datetime
-from sqlalchemy import DateTime, func, String, Boolean
+from sqlalchemy import DateTime, func, String, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.core.database import BaseModel
-
-class AllMessages:
-    
-    def __init__(self, *, all_message: int, date: datetime):
-        self.all_message = all_message
-        self.date = date,
 
 class MessageActivity(BaseModel):
     
@@ -19,7 +13,8 @@ class MessageActivity(BaseModel):
         autoincrement=True,
     )
     
-    user_id: Mapped[int] = mapped_column(
+    user_id: Mapped[str] = mapped_column(
+        String,
         index=True,
         nullable=False,
         unique=True,
@@ -31,7 +26,7 @@ class MessageActivity(BaseModel):
     )
     
     counter_message: Mapped[int] = mapped_column(
-        server_default=0,
+        server_default="0",
     )
     
     last_message: Mapped[datetime] = mapped_column(
@@ -55,18 +50,18 @@ class Followers(BaseModel):
         autoincrement=True,
     )
     
-    is_premium: Mapped[Boolean] = mapped_column(
-        server_default=False,
-        index=True,
+    is_premium: Mapped[bool] = mapped_column(
+        server_default="false",
     )
     
-    user_id: Mapped[int] = mapped_column(
+    user_id: Mapped[str] = mapped_column(
+        String,
         nullable=False,
         unique=True,
     )
     
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_defautl=func.now(),
+        server_default=func.now(),
         index=True,
     )

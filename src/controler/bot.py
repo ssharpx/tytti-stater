@@ -8,7 +8,7 @@ from src.service.service import Service
 service = Service()
 standart_obj = StandartLoader()
 
-logger = logging.gelLogger(__name__)
+logger = logging.getLogger(__name__)
 
 router = Router()
 
@@ -23,8 +23,11 @@ async def event_join_new_chat_member(event: ChatMemberUpdated):
 
 async def sender_message(bot: Bot) -> None:
     ready_text = await service.get_all_message_from_data()
+    
     await bot.send_message(
         chat_id=standart_obj.get_output,
         text=ready_text,
         parse_mode="HTML",
     )
+    
+    await service.clear_table_message()

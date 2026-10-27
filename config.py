@@ -7,14 +7,15 @@ This parameter determines exactly when it calculates the statistics and sends th
 
 Warning! Once this operation is completed, the data for the previous day will be deleted.
 
-Standart: 5:00 AM.
+Standart: 0:00 UTC.
 '''
-UPDATE_TIME: int = 5
+UPDATE_TIME: int = 0
 
 
 
 
 logging.basicConfig(
+    level=logging.DEBUG,
     format="[%(asctime)s]: [%(name)s)]: [%(levelname)s]: %(message)s",
 )
 
