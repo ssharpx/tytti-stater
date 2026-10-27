@@ -130,7 +130,7 @@ class Repository:
                 )
                 return None
     
-    async def add_new_follower(self, user_id: int, is_premium: bool) -> None:
+    async def add_new_follower(self, user_id: int, is_premium: bool = False) -> None:
         
         async with get_db() as db:
             try:
