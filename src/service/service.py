@@ -56,7 +56,7 @@ class Service:
         new_followers: int,
         count_premium: int,
     ) -> str:
-        logger.info(users)
+        
         top_users = "\n".join(f"{i}. {username} ({count_message})" for i, (username, count_message) in enumerate(users, start=1)) or "-"
             
         return (
