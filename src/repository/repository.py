@@ -1,6 +1,7 @@
 from datetime import datetime
-from sqlalchemy import select, desc, delete
+from sqlalchemy import select, desc, delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from src.core.database import get_db
@@ -14,30 +15,26 @@ class Repository:
     
     async def update_message_user(self, user_id: int, username: str | None) -> None:
         
+        stmt = insert(MessageActivity).values(
+            user_id=str(user_id),
+            username=username,
+            counter_message=1, 
+        )
+        
+        stmt = stmt.on_conflict_do_update(
+        index_elements=[MessageActivity.user_id],
+        set_={
+            "counter_message": MessageActivity.counter_message + 1,
+            "username": func.coalesce(stmt.excluded.username, MessageActivity.username),
+        },
+    )
+        
         async with get_db() as db:
     
             try:
-                user = await self._get_user_exsist(
-                    db=db,
-                    user_id=user_id,
-                )
-                
-                if user:
-                    user.counter_message += 1
-                    db.add(user)
-                
-                else:
-                    new_user = MessageActivity(
-                        user_id=str(user_id),
-                        username=username,
-                        counter_message=1,
-                    )
-                    
-                    db.add(new_user)
-                
+                await db.execute(stmt)
                 await db.commit()
-                return None
-                    
+                       
             except IntegrityError as e:
                 await db.rollback()
                 logger.warning(
@@ -45,29 +42,6 @@ class Repository:
                     type(e).__name__,
                     e,
                 )
-                return None
-    
-    
-    async def _get_user_exsist(self, *, db: AsyncSession, user_id: int) -> MessageActivity | None:
-        
-        try:
-            
-            result = await db.execute(
-                select(MessageActivity).where(
-                    MessageActivity.user_id == str(user_id),
-                )
-            )
-            
-            return result.scalar_one_or_none()
-        
-        except SQLAlchemyError as e:
-            logger.warning(
-                "_get_user_exsist: database error | %s (%s)",
-                type(e).__name__,
-                e,
-            )
-            return None
-    
     
     async def clear_table_message(self) -> None:
         
